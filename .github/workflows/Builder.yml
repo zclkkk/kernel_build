@@ -38,12 +38,12 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           7z a -mx9 ${VERSION}.zip *
           zipalign -v 4 ${VERSION}.zip ../${VERSION}_${BOARD}.zip
-         env:
+        env:
            BOARD: ${{ env.BOARD }}
       - name: 上传内核
         run: |
           curl -sL https://git.io/file-transfer | bash -s beta
           ./transfer trs ${VERSION}_${BOARD}.zip
-         env:
+        env:
            BOARD: ${{ env.BOARD }}
            VERSION: ${{ env.VERSION }}
