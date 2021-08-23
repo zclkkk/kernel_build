@@ -13,7 +13,7 @@ jobs:
           sudo apt update -y
           sudo apt-get install -y zip zipalign bc build-essential zip gcc clang libc6 curl libstdc++6 git wget libssl-dev zstd gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi python2 cpio
           BOARD=
-        echo "BOARD=$BOARD" >> $GITHUB_ENV
+          echo "BOARD=$BOARD" >> $GITHUB_ENV
       - name: 拉取源代码和工具链
         run: |
           git clone https://oauth2:${{ secrets.TOKEN }}@github.com/zclkkk/kernel_xiaomi_sm8150.git msm-4.14 --depth=1 -b main
