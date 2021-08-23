@@ -28,7 +28,7 @@ jobs:
           cd kernel/xiaomi/sdm710
           make ${args} sirius_defconfig
           make -j16 ${args}
-          cd ..
+          cd kernel_xiaomi_sdm710
           cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3/
           cp out/arch/arm64/boot/dtbo.img AnyKernel3/
           cd AnyKernel3
