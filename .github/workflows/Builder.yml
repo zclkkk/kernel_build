@@ -12,7 +12,7 @@ jobs:
         run: |
           sudo apt update -y
           sudo apt-get install -y zip zipalign bc build-essential zip gcc clang libc6 curl libstdc++6 git wget libssl-dev zstd gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi python2 cpio
-          BOARD=
+          BOARD=raphael
           echo "BOARD=$BOARD" >> $GITHUB_ENV
       - name: 拉取源代码和工具链
         run: |
