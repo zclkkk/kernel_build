@@ -25,10 +25,10 @@ jobs:
           export KBUILD_BUILD_USER="XPH"
           export KBUILD_BUILD_HOST="Server"
           args="O=../out ARCH=arm64 CC=${CLANG_DIR}/bin/clang CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- "
-          cd kernel/xiaomi/sdm710
+          cd kernel_xiaomi_sdm710 
           make ${args} sirius_defconfig
           make -j16 ${args}
-          cd kernel_xiaomi_sdm710
+          cd ..
           cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3/
           cp out/arch/arm64/boot/dtbo.img AnyKernel3/
           cd AnyKernel3
