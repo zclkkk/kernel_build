@@ -19,7 +19,7 @@ jobs:
           mv linux-x86/clang-r416183c clang
       - name: 构建和上传内核
         run: |
-          BOARD=TP1803
+          BOARD=perseus
           git clone --depth=1 https://github.com/zclkkk/AnyKernel3 -b main
           CLANG_DIR=../clang
           export KBUILD_BUILD_USER="zclkkk"
