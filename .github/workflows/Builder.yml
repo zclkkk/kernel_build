@@ -26,7 +26,7 @@ jobs:
           export KBUILD_BUILD_HOST="Server"
           args="O=../out ARCH=arm64 CC=${CLANG_DIR}/bin/clang CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- "
           cd kernel_xiaomi_apollo
-          make ${args} apollo_defconfig
+          make ${args} ranchu64_defconfig
           make -j16 ${args}
           cd ..
           cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3/
