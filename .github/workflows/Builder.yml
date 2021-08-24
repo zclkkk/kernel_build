@@ -30,7 +30,6 @@ jobs:
           make -j16 ${args}
           cd ..
           cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3/
-          cp out/arch/arm64/boot/dtbo.img AnyKernel3/
           cd AnyKernel3
           VERSION=KneipKernel_BETA
           7z a -mx9 ${VERSION}.zip *
