@@ -14,19 +14,19 @@ jobs:
           sudo apt-get install -y zip zipalign bc build-essential zip gcc clang libc6 curl libstdc++6 git wget libssl-dev zstd gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi python2 cpio
       - name: 拉取源代码和工具链
         run: |
-          git clone https://github.com/LineageOS/android_kernel_xiaomi_sdm845 --depth=1
+          git clone https://github.com/PixelExperience-Devices/kernel_xiaomi_apollo --depth=1
           git clone https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 
           mv linux-x86/clang-r416183c clang
       - name: 构建和上传内核
         run: |
-          BOARD=perseus
+          BOARD=apollo
           git clone --depth=1 https://github.com/zclkkk/AnyKernel3 -b main
           CLANG_DIR=../clang
           export KBUILD_BUILD_USER="zclkkk"
           export KBUILD_BUILD_HOST="Server"
           args="O=../out ARCH=arm64 CC=${CLANG_DIR}/bin/clang CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- "
-          cd android_kernel_xiaomi_sdm845
-          make ${args} perseus_defconfig
+          cd kernel_xiaomi_apollo
+          make ${args} apollo_defconfig
           make -j16 ${args}
           cd ..
           cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3/
