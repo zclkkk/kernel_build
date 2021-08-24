@@ -25,13 +25,13 @@ jobs:
           export KBUILD_BUILD_USER="XPH"
           export KBUILD_BUILD_HOST="Server"
           args="O=../out ARCH=arm64 CC=${CLANG_DIR}/bin/clang CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- "
-          cd kernel_xiaomi_sm8250
+          cd android_kernel_xiaomi_sm8250
           make ${args} apollo_defconfig
           make -j16 ${args}
           cd ..
           cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3/
           cd AnyKernel3
-          VERSION=KneipKernel_BETA
+          VERSION=KneipKernel_BETA1
           7z a -mx9 ${VERSION}.zip *
           zipalign -v 4 ${VERSION}.zip ../${VERSION}_${BOARD}.zip
           cd ..
