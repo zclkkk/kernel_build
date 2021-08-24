@@ -25,7 +25,7 @@ jobs:
           export KBUILD_BUILD_USER="zclkkk"
           export KBUILD_BUILD_HOST="Server"
           args="O=../out ARCH=arm64 CC=${CLANG_DIR}/bin/clang CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- "
-          cd android_kernel_xiaomi_sm8250
+          cd android_kernel_xiaomi_sm8250-1
           make ${args} apollo_user_defconfig
           make -j16 ${args}
           cd ..
