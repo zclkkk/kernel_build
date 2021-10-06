@@ -2,7 +2,6 @@ name: 构建Kneip内核
 on:
   watch:
     types: [started]
-
 jobs:
   KneipKernel:
     runs-on: ubuntu-latest
@@ -11,41 +10,29 @@ jobs:
         run: |
           sudo apt update -y
           sudo apt-get install -y zip zipalign bc build-essential zip gcc clang libc6 curl libstdc++6 git wget libssl-dev zstd gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi python2 cpio
-          BOARD=raphael
-          echo "BOARD=$BOARD" >> $GITHUB_ENV
-          curl -sL https://git.io/file-transfer | bash -s beta
       - name: 拉取源代码和工具链
         run: |
-          git clone https://oauth2:${{ secrets.TOKEN }}@github.com/Nicede/kernel_xiaomi_sdm710-1 --depth=1 -b eleven
-          VERSION="$(cat msm-4.14/arch/arm64/configs/${BOARD}_defconfig | grep "CONFIG_LOCALVERSION\=" | sed -r 's/.*"(.+)".*/\1/' | sed 's/^.//')"
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          git clone https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 --depth=1
-          mv linux-x86/clang-r428724 clang
-          rm -rf linux-x86
+          git clone hhttps://github.com/Nicede/710 --depth=1
+          git clone https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 
+          mv linux-x86/clang-r416183c clang
+      - name: 构建和上传内核
+        run: |
+          BOARD=sirius
           git clone --depth=1 https://github.com/zclkkk/AnyKernel3 -b main
-      - name: 构建内核
-        run: |
-          export KBUILD_BUILD_USER="zclkkk"
+          CLANG_DIR=../clang
+          export KBUILD_BUILD_USER="XPH"
           export KBUILD_BUILD_HOST="Server"
-          args="O=../out ARCH=arm64 CC=../clang/bin/clang CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi-"
-          cd msm-4.14
-          make ${args} ${BOARD}_defconfig
-          make -j64 ${args}
-        env:
-           BOARD: ${{ env.BOARD }}
-      - name: 打包内核
-        run: |
+          args="O=../out ARCH=arm64 CC=${CLANG_DIR}/bin/clang CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- "
+          cd 710
+          make ${args} sirius_defconfig
+          make -j16 ${args}
+          cd ..
           cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3/
           cp out/arch/arm64/boot/dtbo.img AnyKernel3/
           cd AnyKernel3
+          VERSION=KneipKernel_BETA
           7z a -mx9 ${VERSION}.zip *
           zipalign -v 4 ${VERSION}.zip ../${VERSION}_${BOARD}.zip
-        env:
-           BOARD: ${{ env.BOARD }}
-           VERSION: ${{ env.VERSION }}
-      - name: 上传内核
-        run: |
+          cd ..
+          curl -sL https://git.io/file-transfer | bash -s beta
           ./transfer trs ${VERSION}_${BOARD}.zip
-        env:
-           BOARD: ${{ env.BOARD }}
-           VERSION: ${{ env.VERSION }
