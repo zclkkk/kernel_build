@@ -1,4 +1,12 @@
 name: 构建Kneip内核
+on:
+  watch:
+    types: [started]
+
+jobs:
+  KneipKernel:
+    runs-on: ubuntu-latest
+    steps:
       - name: 环境准备
         run: |
           sudo apt update -y
