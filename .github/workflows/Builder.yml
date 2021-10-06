@@ -12,12 +12,12 @@ jobs:
         run: |
           sudo apt update -y
           sudo apt-get install -y zip zipalign bc build-essential zip gcc clang libc6 curl libstdc++6 git wget libssl-dev zstd gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi python2 cpio
-          BOARD=raphael
+          BOARD=sirius
           echo "BOARD=$BOARD" >> $GITHUB_ENV
           curl -sL https://git.io/file-transfer | bash -s beta
       - name: 拉取源代码和工具链
         run: |
-          git clone https://oauth2:${{ secrets.TOKEN }}@github.com/zclkkk/kernel_xiaomi_sm8150.git msm-4.14 --depth=1 -b main
+          git clone https://oauth2:${{ secrets.TOKEN }}@github.com/Nicede/kernel_xiaomi_sdm710-1 --depth=1 -b eleven
           VERSION="$(cat msm-4.14/arch/arm64/configs/${BOARD}_defconfig | grep "CONFIG_LOCALVERSION\=" | sed -r 's/.*"(.+)".*/\1/' | sed 's/^.//')"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           git clone https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 --depth=1
