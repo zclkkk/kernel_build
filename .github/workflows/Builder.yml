@@ -3,7 +3,7 @@ name: 构建Kneip内核
         run: |
           sudo apt update -y
           sudo apt-get install -y zip zipalign bc build-essential zip gcc clang libc6 curl libstdc++6 git wget libssl-dev zstd gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi python2 cpio
-          BOARD=sirius
+          BOARD=raphael
           echo "BOARD=$BOARD" >> $GITHUB_ENV
           curl -sL https://git.io/file-transfer | bash -s beta
       - name: 拉取源代码和工具链
