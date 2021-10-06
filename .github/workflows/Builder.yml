@@ -1,14 +1,4 @@
-name: 构建Kneip内核
-
-on:
-  watch:
-    types: [started]
-
-jobs:
-  KneipKernel:
-    runs-on: ubuntu-latest
-    steps:
-      - name: 环境准备
+        name: 环境准备
         run: |
           sudo apt update -y
           sudo apt-get install -y zip zipalign bc build-essential zip gcc clang libc6 curl libstdc++6 git wget libssl-dev zstd gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi python2 cpio
