@@ -19,7 +19,7 @@ jobs:
           echo "KERNEL_TARGET=$(cat config.env | grep -w "KERNEL_TARGET" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
           echo "BUILD_ARGS=$(cat config.env | grep -w "BUILD_ARGS" | head -n 1 | cut -d ":" -f 2)" >> $GITHUB_ENV
           sudo apt-get update
-          sudo apt-get install device-tree-compile
+          sudo apt-get install device-tree-compiler
 
       - name: Pull toolchain
         run: |
