@@ -47,6 +47,7 @@ jobs:
                                   dtc=/usr/bin/dtc"
           cd kernel-source
           chmod -R 777 ./prebuilt/dtc
+          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
       
           make ${args} ${{ env.KERNEL_TARGET }}_defconfig
           make -j64 ${args}
