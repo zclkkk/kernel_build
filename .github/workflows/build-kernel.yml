@@ -48,7 +48,11 @@ jobs:
           cd kernel-source
           chmod -R 777 ./prebuilt/dtc
           curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
-      
+          echo "CONFIG_MODULES=y" >> ${args} ${{ env.KERNEL_TARGET }}_defconfig
+          echo "CONFIG_KPROBES=y" >> ${args} ${{ env.KERNEL_TARGET }}_defconfig
+          echo "CONFIG_HAVE_KPROBES=y" >> ${args} ${{ env.KERNEL_TARGET }}_defconfig
+          echo "CONFIG_KPROBE_EVENTS=y" >> ${args} ${{ env.KERNEL_TARGET }}_defconfig
+          echo "CONFIG_OVERLAY_FS=y" >> ${args} ${{ env.KERNEL_TARGET }}_defconfig
           make ${args} ${{ env.KERNEL_TARGET }}_defconfig
           make -j64 ${args}
 
