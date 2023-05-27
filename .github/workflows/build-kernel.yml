@@ -64,5 +64,5 @@ jobs:
       - name: Upload kernel to artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.KERNEL_VERSION }}_${{ env.KERNEL_TARGET }}
+          name: PixelExp-Munch
           path: AnyKernel3/*
