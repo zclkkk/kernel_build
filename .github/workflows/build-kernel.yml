@@ -45,7 +45,6 @@ jobs:
       id: get_time
       run: |
         echo "TIME=$(TZ=UTC-8 date +%m%d%H%M )" >> $GITHUB_OUTPUT
-
     - name: Build Kernel-With-KernelSU
       run: |
         curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
@@ -53,7 +52,6 @@ jobs:
         make $KERNEL_CMDLINE $KERNEL_DEFCONFIG CC="ccache clang"
         make $KERNEL_CMDLINE CC="ccache clang" -j$(nproc --all)
         cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3_Backup
-
     - name: Upload Kernel-SU
       uses: actions/upload-artifact@v3
       with:
