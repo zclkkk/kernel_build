@@ -38,11 +38,7 @@ jobs:
         sudo apt install gcc-arm-linux-gnueabi -y
         sudo apt install binutils make python3 libssl-dev build-essential bc  bison flex unzip libssl-dev ca-certificates xz-utils mkbootimg cpio device-tree-compiler git git-lfs -y
         git clone https://github.com/Coconutat/Radioactive_kernel_op6_Exp -b release_Q_KernelSU_Exp --dept=1
-        pwd
-        ls
-        cd Radioactive_kernel_op6_Exp
-        pwd
-        ls
+        cd Radioactive_kernel_op6_Exp/
         git clone https://github.com/kdrag0n/proton-clang --dept=1 -b master
         git clone https://github.com/Coconutat/AnyKernel3_Backup -b Op6_KSU --depth=1
         rm -rf AnyKernel3/.git
@@ -51,15 +47,18 @@ jobs:
       id: get_time
       run: |
         echo "TIME=$(TZ=UTC-8 date +%m%d%H%M )" >> $GITHUB_OUTPUT
+
     - name: Build Kernel-With-KernelSU
       run: |
+        cd Radioactive_kernel_op6_Exp/
         curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
         export PATH=$(pwd)/proton-clang/bin/:$PATH
         make $KERNEL_CMDLINE $KERNEL_DEFCONFIG CC="ccache clang"
         make $KERNEL_CMDLINE CC="ccache clang" -j$(nproc --all)
         cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3_Backup
+
     - name: Upload Kernel-SU
       uses: actions/upload-artifact@v3
       with:
         name: Radioactive_kernel_op6-KSU-${{ steps.get_time.outputs.TIME }}
-        path: "AnyKernel3_Backup/*"
+        path: "Radioactive_kernel_op6_Exp/AnyKernel3_Backup/*"
