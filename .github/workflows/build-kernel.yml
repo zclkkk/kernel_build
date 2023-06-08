@@ -1,68 +1,61 @@
-name: Build MikaKernel
-
-
+name: Build OnePlus 6 and 6t KernelSU Kernel
 on:
   workflow_dispatch:
-
+  schedule:
+      # Run once a week on Sunday at midnight. See http://crontab.guru
+      - cron: '0 21 * * *'
+  push:
+    branches:
+      - HEAD
+  pull_request:
+      branches:
+      - HEAD
 
 jobs:
-  build-kernel:
+  build:
     runs-on: ubuntu-latest
+    env:
+      CCACHE_COMPILERCHECK: "%compiler% -dumpmachine; %compiler% -dumpversion"
+      CCACHE_NOHASHDIR: "true"
+      CCACHE_MAXSIZE: "2G"
+      CCACHE_HARDLINK: "true"
+      KERNEL_DEFCONFIG: "radioactive_ksu_defconfig"
+      KERNEL_CMDLINE: "ARCH=arm64 CC=clang CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- O=out"
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup environment
-        run: |
-          echo "ANYKERNEL_SOURCE=$(cat config.env | grep -w "ANYKERNEL_SOURCE" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
-          echo "ANYKERNEL_SOURCE_BRANCH=$(cat config.env | grep -w "ANYKERNEL_SOURCE_BRANCH" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
-          echo "KERNEL_SOURCE=$(cat config.env | grep -w "KERNEL_SOURCE" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
-          echo "KERNEL_SOURCE_BRANCH=$(cat config.env | grep -w "KERNEL_SOURCE_BRANCH" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
-          echo "KERNEL_TARGET=$(cat config.env | grep -w "KERNEL_TARGET" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
-          echo "BUILD_ARGS=$(cat config.env | grep -w "BUILD_ARGS" | head -n 1 | cut -d ":" -f 2)" >> $GITHUB_ENV
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: 'true'
+        fetch-depth: 100
 
-      - name: Pull toolchain
-        run: |
-          git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9 aarch64-linux-android-4.9
-          git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9 arm-linux-androideabi-4.9
-          mkdir clang && curl https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android12-release/clang-r416183b1.tar.gz -RLO && tar -C clang/ -xf clang-*.tar.gz
+    - name: Set up ccache
+      uses: hendrikmuhs/ccache-action@v1.2
 
-      - name: Pull kernel source
-        run: |
-          git clone --depth=1 ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_SOURCE_BRANCH }} kernel-source
-          echo "KERNEL_VERSION="$(cat kernel-source/arch/arm64/configs/${{ env.KERNEL_TARGET }}_defconfig | grep "CONFIG_LOCALVERSION\=" | sed -r 's/.*"(.+)".*/\1/' | sed 's/^.//')"" >> $GITHUB_ENV
+    - name: Install dependencies
+      run: |
+        sudo apt-get update -y 
+        sudo apt install gcc-aarch64-linux-gnu -y
+        sudo apt install gcc-arm-linux-gnueabi -y
+        sudo apt install binutils make python3 libssl-dev build-essential bc  bison flex unzip libssl-dev ca-certificates xz-utils mkbootimg cpio device-tree-compiler git git-lfs -y
+        git clone https://github.com/kdrag0n/proton-clang --dept=1 -b master
+        git clone https://github.com/Coconutat/AnyKernel3_Backup -b Op6_KSU --depth=1
+        rm -rf AnyKernel3/.git
+    
+    - name: GetTime
+      id: get_time
+      run: |
+        echo "TIME=$(TZ=UTC-8 date +%m%d%H%M )" >> $GITHUB_OUTPUT
 
-      - name: Build kernel
-        run: |
-          export KBUILD_BUILD_USER="zclkkk"
-          export KBUILD_BUILD_HOST="workspace"
-          export PATH=$GITHUB_WORKSPACE/clang/bin:${PATH}
-          args="                  ARCH=arm64 \
-                                  O=../out \
-                                  ${{ env.BUILD_ARGS }} \
-                                  CLANG_TRIPLE=aarch64-linux-gnu- \
-                                  CROSS_COMPILE=$GITHUB_WORKSPACE/aarch64-linux-android-4.9/bin/aarch64-linux-android- \
-                                  CROSS_COMPILE_ARM32=$GITHUB_WORKSPACE/arm-linux-androideabi-4.9/bin/arm-linux-androideabi- "
-          cd kernel-source
-          make ${args} ${{ env.KERNEL_TARGET }}_defconfig
-          make -j$(($(getconf _NPROCESSORS_ONLN) * 2)) ${args}
+    - name: Build Kernel-With-KernelSU
+      run: |
+        curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
+        export PATH=$(pwd)/proton-clang/bin/:$PATH
+        make $KERNEL_CMDLINE $KERNEL_DEFCONFIG CC="ccache clang"
+        make $KERNEL_CMDLINE CC="ccache clang" -j$(nproc --all)
+        cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3_Backup
 
-      - name: Package kernel
-        run: |
-          git clone --depth=1 ${{ env.ANYKERNEL_SOURCE }} -b ${{ env.ANYKERNEL_SOURCE_BRANCH }} AnyKernel3 && rm -rf AnyKernel3/.git AnyKernel3/.github AnyKernel3/LICENSE AnyKernel3/README.md
-          if [[ -f out/arch/arm64/boot/Image.gz-dtb ]]; then
-            cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3/Image.gz-dtb
-          elif [[ -f out/arch/arm64/boot/Image-dtb ]]; then
-            cp out/arch/arm64/boot/Image-dtb AnyKernel3/Image-dtb
-          elif [[ -f out/arch/arm64/boot/Image.gz ]]; then
-            cp out/arch/arm64/boot/Image.gz AnyKernel3/Image.gz
-          elif [[ -f out/arch/arm64/boot/Image ]]; then
-            cp out/arch/arm64/boot/Image AnyKernel3/Image
-          fi
-          if [ -f out/arch/arm64/boot/dtbo.img ]; then
-            cp out/arch/arm64/boot/dtbo.img AnyKernel3/dtbo.img
-          fi
-
-      - name: Upload kernel to artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.KERNEL_VERSION }}_${{ env.KERNEL_TARGET }}
-          path: AnyKernel3/*
+    - name: Upload Kernel-SU
+      uses: actions/upload-artifact@v3
+      with:
+        name: Radioactive_kernel_op6-KSU-${{ steps.get_time.outputs.TIME }}
+        path: "AnyKernel3_Backup/*"
