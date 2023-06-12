@@ -19,5 +19,3 @@ Meow!
    |       BUILD_ARGS        | Your kernel compile aguments, separate with space |
 
 3. Click `Run workflow` in `Action->Build MikaKernel`
-
-## Warning: 他妈的先Fork再修改！再开PR我骂人了！
