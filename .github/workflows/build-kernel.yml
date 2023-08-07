@@ -27,7 +27,7 @@ jobs:
 
       - name: Pull kernel source
         run: |
-          git clone ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_SOURCE_BRANCH }} kernel-source
+          git clone --depth=1 ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_SOURCE_BRANCH }} kernel-source
           echo "KERNEL_VERSION="$(cat kernel-source/arch/arm64/configs/${{ env.KERNEL_TARGET }}_defconfig | grep "CONFIG_LOCALVERSION\=" | sed -r 's/.*"(.+)".*/\1/' | sed 's/^.//')"" >> $GITHUB_ENV
 
       - name: Build kernel
