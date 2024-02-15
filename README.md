@@ -15,7 +15,7 @@ Meow!
    | ANYKERNEL_SOURCE_BRANCH | Your Anykernel3 branch                            |
    |      KERNEL_SOURCE      | Your kernel source repo                           |
    |  KERNEL_SOURCE_BRANCH   | Your kernel source branch                         |
-   |      KERNEL_TARGET      | Your device codename                              |
+   |      KERNEL_CONFIG      | Your device config                                |
    |       BUILD_ARGS        | Your kernel compile aguments, separate with space |
 
 3. Click `Run workflow` in `Action->Build MikaKernel`
