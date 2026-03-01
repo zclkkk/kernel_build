@@ -21,8 +21,6 @@ jobs:
 
       - name: Pull toolchain
         run: |
-          git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9 aarch64-linux-android-4.9
-          git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9 arm-linux-androideabi-4.9
           mkdir clang && curl https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android16-release/clang-r547379.tar.gz -RLO && tar -C clang/ -xf clang-*.tar.gz
 
       - name: Pull kernel source
@@ -38,8 +36,7 @@ jobs:
                                   O=../out \
                                   ${{ env.BUILD_ARGS }} \
                                   CLANG_TRIPLE=aarch64-linux-gnu- \
-                                  CROSS_COMPILE=$GITHUB_WORKSPACE/aarch64-linux-android-4.9/bin/aarch64-linux-android- \
-                                  CROSS_COMPILE_ARM32=$GITHUB_WORKSPACE/arm-linux-androideabi-4.9/bin/arm-linux-androideabi- "
+                                  LLVM=1 LLVM_IAS=1 "
           cd kernel-source
           make ${args} ${{ env.KERNEL_CONFIG }}
           make -j$(($(getconf _NPROCESSORS_ONLN) * 2)) ${args}
